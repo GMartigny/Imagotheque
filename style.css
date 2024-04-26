@@ -1,0 +1,21 @@
+body {
+    margin: 0;
+    background: #1a2a33;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+}
+
+#canvas {
+    display: block;
+    box-shadow: 0 0 10px rgb(255 255 255 / 50%);
+}
+
+#redraw {
+    position: absolute;
+    right: 2rem;
+    top: 50%;
+    transform: translate(0, -50%);
+}
