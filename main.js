@@ -11,6 +11,12 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const { width, height } = canvas;
 
+const nbPixels = BigInt((width * height) / (pixelSize * 2));
+const nbColor = 256n ** 3n;
+const possibilities = (nbColor ** nbPixels).toString();
+
+console.log(`Number of possible images: ~${possibilities[0]}e${possibilities.length - 1}`);
+
 const dico = [...new Array(26)].map((_, i) => String.fromCharCode(97 + i));
 dico.push(
   ...dico.map(c => c.toUpperCase()),
@@ -73,7 +79,7 @@ function sfc32(a, b, c, d) {
  * @param {number} length
  * @return {string}
  */
-function getId(length = random(100)) {
+function getId(length = random(100) + 1) {
   return [...new Array(length)].map(() => dico[random(dico.length)]).join("");
 }
 
@@ -92,7 +98,7 @@ function random(max, func = Math.random) {
  * @param {string} [id]
  */
 function draw(id) {
-  console.time("Render: ");
+  console.time("Render");
   id = id || getId();
   const seeded = sfc32(...cyrb128(id));
 
@@ -110,7 +116,7 @@ function draw(id) {
     }
   }
 
-  console.timeEnd("Render: ");
+  console.timeEnd("Render");
 }
 
 draw(location.hash.slice(1));
