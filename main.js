@@ -10,6 +10,7 @@ const pixelSize = 2;
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const { width, height } = canvas;
+ctx.imageSmoothingEnabled = false;
 
 const nbPixels = BigInt((width * height) / (pixelSize * 2));
 const nbColor = 256n ** 3n;
@@ -104,17 +105,18 @@ function draw(id) {
 
   location.hash = id;
 
-  function color() {
-    const value = (random(256 ** 3, seeded)).toString(16).padStart(2, "0");
-    return `#${value}`;
-  }
+  const channel = random.bind(null, 256, seeded);
 
-  for (let x = 0; x < width; x += pixelSize) {
-    for (let y = 0; y < height; y += pixelSize) {
-      ctx.fillStyle = color();
-      ctx.fillRect(x, y, pixelSize, pixelSize);
-    }
+  const imgData = new ImageData(width / pixelSize, height / pixelSize);
+  const { length } = imgData.data;
+  for (let i = 0; i < length; i += 4) {
+    imgData.data[i] = channel();
+    imgData.data[i + 1] = channel();
+    imgData.data[i + 2] = channel();
+    imgData.data[i + 3] = 255;
   }
+  ctx.putImageData(imgData, 0, 0);
+  ctx.drawImage(canvas, 0, 0, width / pixelSize, height / pixelSize, 0, 0, width, height);
 
   console.timeEnd("Render");
 }
