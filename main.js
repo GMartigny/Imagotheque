@@ -21,7 +21,7 @@ dico.push(
 const redraw = document.createElement("button");
 redraw.id = "redraw";
 redraw.textContent = "Redraw";
-redraw.addEventListener("click", draw);
+redraw.addEventListener("click", () => draw());
 document.body.appendChild(redraw);
 
 /**
