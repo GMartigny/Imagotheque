@@ -6,10 +6,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="canvas" width="500" height="300"></canvas>
+<div id="picture">
+    <canvas id="canvas" width="500" height="300">Random image</canvas>
+    <i>i</i>
+    <div id="description">
+        <h2>What am I looking at ?</h2>
+        <p>
+            Imagine an infinite museum. In it, each painting is 500 pixels wide, 300 pixels tall and completely unique.
+        </p>
+        <p>
+            Each pixel can take any "web" color. A "web" color is defined by 3 component (red, green and blue) that each have 256 possible value.
+            Which means that 3<sup>256</sup> equals about 16 Millions possible colors.
+            With 150 000 pixels per painting, the total number of possibilities is about 9x10<sup>270926</sup>.
+        </p>
+        <p>
+            In the end, our museum is huge, but finite. We can scour it for years and never see the end, but every 500 by 300 images are in here.
+            There's a picture of you somewhere, an all green canvas, a formula for nuclear fusion's reactors ...
+        </p>
+    </div>
+</div>
 <form id="form">
     <input name="input" />
-    <button id="redraw">Redraw</button>
+    <button id="redraw" type="submit">Redraw</button>
 </form>
 <script type="module" src="./main.js"></script>
 </body>
