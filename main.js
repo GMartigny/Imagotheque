@@ -12,24 +12,38 @@ const ctx = canvas.getContext("2d");
 const { width, height } = canvas;
 ctx.imageSmoothingEnabled = false;
 
+/**
+ * @param {BigInt} big
+ * @return {string}
+ */
+function s(big) {
+  const str = big.toString();
+  return `${str[0]}e${str.length - 1}`;
+}
+
 const nbPixels = BigInt((width * height) / (pixelSize * 2));
 const nbColor = 256n ** 3n;
-const possibilities = (nbColor ** nbPixels).toString();
 
-console.log(`Number of possible images: ~${possibilities[0]}e${possibilities.length - 1}`);
+console.log(`Number of possible images: ~${s(nbColor ** nbPixels)}`);
 
-const dico = [...new Array(26)].map((_, i) => String.fromCharCode(97 + i));
-dico.push(
-  ...dico.map(c => c.toUpperCase()),
-  ...[...new Array(10)].map((_, i) => String.fromCharCode(48 + i)),
-  ..."'(-_).!*~",
-);
+const dico = [...new Array(128)]
+  .map((_, i) => String.fromCharCode(i))
+  .filter(c => c === encodeURI(c) && c !== "#");
 
-const redraw = document.createElement("button");
-redraw.id = "redraw";
-redraw.textContent = "Redraw";
-redraw.addEventListener("click", () => draw());
-document.body.appendChild(redraw);
+const idLength = 128;
+const dicoLength = BigInt(dico.length);
+let sum = dicoLength;
+for (let i = 2; i <= idLength; ++i) {
+  sum *= dicoLength ** BigInt(i);
+}
+console.log(`Number of possible IDs: ~${s(sum)}`);
+
+const form = document.getElementById("form");
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const id = form.input.value === decodeURI(location.hash.slice(1)) ? getId() : form.input.value;
+  draw(id);
+});
 
 /**
  * String to number hash
@@ -80,7 +94,7 @@ function sfc32(a, b, c, d) {
  * @param {number} length
  * @return {string}
  */
-function getId(length = random(100) + 1) {
+function getId(length = random(idLength - 1) + 1) {
   return [...new Array(length)].map(() => dico[random(dico.length)]).join("");
 }
 
@@ -99,12 +113,11 @@ function random(max, func = Math.random) {
  * @param {string} [id]
  */
 function draw(id) {
-  console.time("Render");
-  id = id || getId();
-  const seeded = sfc32(...cyrb128(id));
-
+  console.log(`Draw ID: ${id}`);
+  form.input.value = id;
   location.hash = id;
 
+  const seeded = sfc32(...cyrb128(id));
   const channel = random.bind(null, 256, seeded);
 
   const imgData = new ImageData(width / pixelSize, height / pixelSize);
@@ -117,8 +130,6 @@ function draw(id) {
   }
   ctx.putImageData(imgData, 0, 0);
   ctx.drawImage(canvas, 0, 0, width / pixelSize, height / pixelSize, 0, 0, width, height);
-
-  console.timeEnd("Render");
 }
 
-draw(location.hash.slice(1));
+draw(decodeURI(location.hash.slice(1)) || getId());
